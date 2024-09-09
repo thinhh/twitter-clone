@@ -28,7 +28,7 @@ app.get('/' , (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/post", postRoutes);
+app.use("/api/posts", postRoutes);
 app.use("/api/notification", notificationRoutes);
 
 app.listen(PORT, () =>{

@@ -7,36 +7,33 @@ import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-const Sidebar = () => {
 
+const Sidebar = () => {
 	const queryClient = useQueryClient();
-	const { mutate: logout, isPending } = useMutation({
+	const { mutate: logout } = useMutation({
 		mutationFn: async () => {
 			try {
 				const res = await fetch("/api/auth/logout", {
 					method: "POST",
-
 				});
-				const authUser = await res.json();
-				if (!res.ok) {
-					throw new Error(authUser.error || 'Something went wrong')
-				}
+				const data = await res.json();
 
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
 			} catch (error) {
-				console.log(error)
-				throw new Error(error)
+				throw new Error(error);
 			}
 		},
 		onSuccess: () => {
-			toast.success("Successful logout");
-			queryClient.invalidateQueries({ queryKey: ['authUser'] })
-
+			queryClient.invalidateQueries({ queryKey: ["authUser"] });
 		},
 		onError: () => {
-			toast.error('Logout Failed')
-		}
-	})
-	const { data: authUser } = useQuery({ queryKey: ['authUser'] });
+			toast.error("Logout failed");
+		},
+	});
+	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+
 	return (
 		<div className='md:flex-[2_2_0] w-18 max-w-52'>
 			<div className='sticky top-0 left-0 h-screen flex flex-col border-r border-gray-700 w-20 md:w-full'>
@@ -85,14 +82,16 @@ const Sidebar = () => {
 						</div>
 						<div className='flex justify-between flex-1'>
 							<div className='hidden md:block'>
-								<p className='text-white font-bold text-sm w-20 truncate'>{authUser?.fullName}</p>
+								<p className='text-white font-bold text-sm w-20 truncate'>{authUser?.fullname}</p>
 								<p className='text-slate-500 text-sm'>@{authUser?.username}</p>
 							</div>
-							<BiLogOut className='w-5 h-5 cursor-pointer'
+							<BiLogOut
+								className='w-5 h-5 cursor-pointer'
 								onClick={(e) => {
 									e.preventDefault();
 									logout();
-								}} />
+								}}
+							/>
 						</div>
 					</Link>
 				)}
