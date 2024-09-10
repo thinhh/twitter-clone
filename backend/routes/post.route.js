@@ -11,6 +11,6 @@ router.get("/following", protectedRoute, getFollowPosts)
 // POST METHOD
 router.post("/create", protectedRoute, createPost);
 router.post("/like/:id", protectedRoute, likePost)
-router.post("/comment-post/:id", protectedRoute, commentPost);
+router.post("/comment/:id", protectedRoute, commentPost);
 router.delete("/:id", protectedRoute, deletePost)
 export default router;
