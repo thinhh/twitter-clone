@@ -194,7 +194,7 @@ export const getUserPosts= async (req, res) => {
             path: "comments.user",
             select: "-password",
         });
-        return res.status(200).json({posts});
+        return res.status(200).json(posts);
     } catch (error) {
         console.log("Error in getUserPosts controller: ", error.message);
         return res.status(500).json({error: error.message});
