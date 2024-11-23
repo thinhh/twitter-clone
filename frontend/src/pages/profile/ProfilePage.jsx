@@ -11,9 +11,10 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
-
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
+import toast from "react-hot-toast";
 import useFollow from "../../hooks/useFollow";
 //import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
@@ -26,7 +27,7 @@ const ProfilePage = () => {
 	const profileImgRef = useRef(null);
 
 	const { username } = useParams();
-
+	const queryClient = useQueryClient()
 	const { follow, isPending } = useFollow();
 	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
@@ -51,8 +52,7 @@ const ProfilePage = () => {
 		},
 	});
 
-
-
+	const { isUpdatingProfile, updateProfile } = useUpdateUserProfile();
 	const isMyProfile = authUser._id === user?._id;
 	const memberSinceDate = formatMemberSinceDate(user?.createdAt);
 	const amIFollowing = authUser?.following.includes(user?._id);
@@ -87,7 +87,7 @@ const ProfilePage = () => {
 									<FaArrowLeft className='w-4 h-4' />
 								</Link>
 								<div className='flex flex-col'>
-									<p className='font-bold text-lg'>{user?.fullName}</p>
+									<p className='font-bold text-lg'>{user?.fullname}</p>
 									<span className='text-sm text-slate-500'>{POSTS?.length} posts</span>
 								</div>
 							</div>
@@ -151,11 +151,7 @@ const ProfilePage = () => {
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={async () => {
-											await updateProfile({ coverImg, profileImg });
-											setProfileImg(null);
-											setCoverImg(null);
-										}}
+										onClick={() => updateProfile()}
 									>
 										{isUpdatingProfile ? "Updating..." : "Update"}
 									</button>
@@ -164,7 +160,7 @@ const ProfilePage = () => {
 
 							<div className='flex flex-col gap-4 mt-14 px-4'>
 								<div className='flex flex-col'>
-									<span className='font-bold text-lg'>{user?.fullName}</span>
+									<span className='font-bold text-lg'>{user?.fullname}</span>
 									<span className='text-sm text-slate-500'>@{user?.username}</span>
 									<span className='text-sm my-1'>{user?.bio}</span>
 								</div>
@@ -175,7 +171,7 @@ const ProfilePage = () => {
 											<>
 												<FaLink className='w-3 h-3 text-slate-500' />
 												<a
-													href='https://youtube.com/@asaprogrammer_'
+													href={user?.link}
 													target='_blank'
 													rel='noreferrer'
 													className='text-sm text-blue-500 hover:underline'
